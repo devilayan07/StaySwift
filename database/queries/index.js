@@ -5,12 +5,30 @@ import BookingModel from "@/models/booking-model";
 import dbConnect from "@/service/mongo";
 import { isDateInbetween } from "@/utils/data-util";
 import { replaceMongoIdInArray, replaceMongoIdInObject } from "@/utils/data-util";
+import User from "@/models/user-model";
+import AmenitiesModel from "@/models/amenities-model";
 
-export async function getAllHotels(destination,checkin,checkout){
+export async function getAllHotels(destination,checkin,checkout,category,amenitiesId){
     await dbConnect()
     const regex=new RegExp(destination,"i")
-    const hotelsByDestination=await Hotels.find({city:{$regex:regex}}).select(["thumbNailUrl","name","highRate","lowRate","city","propertyCategory"]).lean()
-    let allHotels=hotelsByDestination
+    const hotelsByDestination=await Hotels.find({city:{$regex:regex}}).select(["thumbNailUrl","name","highRate","lowRate","city","propertyCategory","amenities"]).lean()
+    let allHotels=hotelsByDestination;
+
+    if(category){
+        const categoriesToMatch=category.split("|");
+
+        allHotels=allHotels.filter((hotel)=>{
+            return categoriesToMatch.includes(hotel.propertyCategory.toString())
+        })
+
+    }
+  if (amenitiesId && amenitiesId.length > 0) {
+    allHotels = allHotels.filter(hotel =>
+      hotel.amenities?.some(aId =>
+        amenitiesId.includes(aId.toString())
+      )
+    )
+  }
     if(checkin && checkout){
        allHotels=await Promise.all(
           allHotels.map((async(hotel)=>{
@@ -72,3 +90,22 @@ export async function getReviewsForAHotel(hotelId){
 
 }
 
+export async function getUserByEmail(email){
+    const users=await User.find({email:email }).lean()
+    return replaceMongoIdInObject(users[0])
+}
+
+export async function getBookingByUser(userId){
+    const bookings=await BookingModel.find({userId:userId}).lean()
+    return replaceMongoIdInArray(bookings)
+}
+
+export async function getAminities(amenities){
+    await dbConnect()
+    const amenitiesArray=decodeURI(amenities).split("|")
+    const aminitiesSearch=await AmenitiesModel.find({name:{ $in: amenitiesArray }}).lean()
+
+    return replaceMongoIdInArray(aminitiesSearch)
+
+
+}

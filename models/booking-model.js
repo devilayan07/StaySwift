@@ -12,7 +12,7 @@ const BookingSchema=new mongoose.Schema({
     },
     checkin:{
         required:true,
-        type:ObjectId
+        type:String
     },
     checkout:{
        required:true,

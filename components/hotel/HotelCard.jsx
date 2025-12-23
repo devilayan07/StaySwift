@@ -2,7 +2,6 @@ import HotelSummaryInfo from "./HotelSummaryInfo";
 import Image from "next/image";
 
 const HotelCard = ({hotelInfo,checkin,checkout}) => {
-  console.log(hotelInfo,"hotelInfo")
   return (
     <div className="flex gap-6 border border-gray/20 p-4 rounded-md">
       <Image

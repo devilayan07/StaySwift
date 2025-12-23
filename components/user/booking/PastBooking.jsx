@@ -1,24 +1,20 @@
-const PastBooking = () => {
+import BookingCard from "./BookingCard";
+
+const PastBooking = ({ bookings }) => {
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold">🕛️ Past Bookings</h2>
-
-      <div className="bg-[#ebf6e9] p-4 rounded-md">
-        <div className="flex justify-between items-center ">
-          <div>
-            <h3 className="text-xl font-semibold">Effotel By Sayaji Jaipur</h3>
-            <div className="text-sm text-gray-600 my-4">
-              <p>Check In: 12/12/2021</p>
-              <p>Check Out: 14/12/2021</p>
-            </div>
+      {bookings &&
+        Array.isArray(bookings) &&
+        bookings?.map((booking) => (
+          <div key={booking.id} className="bg-[#ebf6e9] p-4 rounded-md">
+            <BookingCard
+              hotelId={booking.hotelId}
+              checkin={booking.checkin}
+              checkout={booking.checkout}
+            />
           </div>
-
-          <div>
-            <h3 className="text-xl font-semibold text-right">$124</h3>
-            <p className="text-sm text-gray-600">$62 per night x 2 days</p>
-          </div>
-        </div>
-      </div>
+        ))}
     </div>
   );
 };
